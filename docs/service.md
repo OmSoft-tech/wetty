@@ -20,7 +20,7 @@ $ systemctl --user enable wetty
 $ systemctl --user start wetty
 ```
 
-This will start WeTTY on port 3000. If you want to change the port or redirect
+This will start WeTTY on port 3001. If you want to change the port or redirect
 stdout/stderr you should change the last line in `wetty.conf` file, something
 like this:
 
