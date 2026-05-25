@@ -13,7 +13,13 @@ export async function spawn(
   const version = await envVersionOr(0);
   const cmd = version >= 9 ? ['-S', ...args] : args;
   logger.debug('Spawning PTY', { cmd });
-  const term = pty.spawn('/usr/bin/env', cmd, xterm);
+  const term = pty.spawn('/usr/bin/env', cmd, {
+    ...xterm,
+    env: {
+      ...xterm.env,
+      ...(process.env.SSHPASS ? { SSHPASS: process.env.SSHPASS } : {}),
+    },
+  });
   const { pid } = term;
   const address = args[0] === 'ssh' ? args[1] : 'localhost';
   logger.info('Process Started on behalf of user', { pid, address });

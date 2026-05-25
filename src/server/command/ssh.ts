@@ -17,8 +17,14 @@ export function sshOptions(
   const hostChecking = knownHosts !== '/dev/null' ? 'yes' : 'no';
   logger().info(`Authentication Type: ${auth}`);
 
+  // Use SSHPASS env variable instead of -p flag to avoid leaking
+  // the password in ps aux output
+  if (pass) {
+    process.env.SSHPASS = pass;
+  }
+
   return [
-    ...(pass ? ['sshpass', '-p', pass] : []),
+    ...pass ? ['sshpass', '-e'] : [],
     'ssh',
     '-t',
     ...(config ? ['-F', config] : []),
