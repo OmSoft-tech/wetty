@@ -40,6 +40,9 @@ export async function server(
       res.sendFile(assetsPath('client', 'manifest.json'));
     })
     .use(`${basePath}/client`, serveStatic('client'))
+    .get(`${basePath}/sw.js`, (_req, res) => {
+      res.sendFile(assetsPath('sw.js'));
+    })
     .use(
       winston.logger({
         winstonInstance: logger(),
