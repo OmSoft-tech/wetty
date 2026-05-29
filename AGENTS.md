@@ -75,7 +75,8 @@ pnpm dev                  # Режим разработки с hot-reload
 
 ### PR'ы в upstream
 
-- [#601](https://github.com/butlerx/wetty/pull/601) — PWA support (approved)
+- [#601](https://github.com/butlerx/wetty/pull/601) — PWA support (merged,
+  released in v3.1.0)
 
 ## Architecture
 
