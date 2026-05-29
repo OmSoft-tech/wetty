@@ -98,3 +98,28 @@ src/
 - Документация WeTTY: https://github.com/butlerx/wetty/tree/main/docs
 - node-pty 1.x: https://www.npmjs.com/package/node-pty
 - xterm.js: https://xtermjs.org/
+
+## Миграция запуска (Docker → native)
+
+Команда для запуска вместо Docker:
+
+```bash
+cd ~/develop/wetty
+node . --base / --port 3001 --host 172.27.0.1 --command /bin/zsh
+```
+
+- `--base /` — терминал по корневому URL (без /wetty)
+- `--command /bin/zsh` — прямой shell (без SSH), работает благодаря фиксу
+  non-root --command
+- `--host 172.27.0.1` — слушать на Docker-хосте (для nginx-proxy-manager)
+
+Порядок переключения:
+
+1. Обновить nginx-proxy-manager: proxy_pass → http://172.27.0.1:3001/ (без
+   /wetty)
+2. Убить процесс WeTTY
+3. Запустить снова
+4. Остановить Docker-контейнер
+
+Docker-контейнер пока работает — не трогать до переключения. systemd-сервис
+пользователь настроит сам.

@@ -6,6 +6,7 @@ import { html } from './socketServer/html.js';
 import { metricMiddleware, metricRoute } from './socketServer/metrics.js';
 import { favicon, redirect } from './socketServer/middleware.js';
 import { policies } from './socketServer/security.js';
+import { assetsPath } from './socketServer/shared/path.js';
 import { listen } from './socketServer/socket.js';
 import { loadSSL } from './socketServer/ssl.js';
 import type { SSL, SSLBuffer, Server } from '../shared/interfaces.js';
@@ -30,6 +31,14 @@ export async function server(
     .disable('x-powered-by')
     .use(metricMiddleware(basePath))
     .use(`${basePath}/metrics`, metricRoute)
+    .get(`${basePath}/sw.js`, (_req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(assetsPath('sw.js'));
+    })
+    .get(`${basePath}/client/manifest.json`, (_req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(assetsPath('client', 'manifest.json'));
+    })
     .use(`${basePath}/client`, serveStatic('client'))
     .use(
       winston.logger({

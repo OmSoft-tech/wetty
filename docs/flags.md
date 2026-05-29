@@ -4,7 +4,7 @@ WeTTY can be run with the `--help` flag to get a full list of flags.
 
 ## Server Port
 
-WeTTY runs on port `3001` by default. You can change the default port by
+WeTTY runs on port `3000` by default. You can change the default port by
 starting with the `--port` or `-p` flag.
 
 ## SSH Host
@@ -21,7 +21,7 @@ connect to.
 
 You can specify the default user used to ssh to a host using the `--ssh-user`.
 This user can overwritten by going to
-`http://yourserver:3001/wetty/ssh/<username>`. If this is left blank a user will
+`http://yourserver:3000/wetty/ssh/<username>`. If this is left blank a user will
 be prompted to enter their username when they connect.
 
 ## SSH Port

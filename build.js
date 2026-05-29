@@ -67,6 +67,9 @@ async function buildClient(watching) {
         assets: [
           { from: './src/assets/xterm_config/*', to: 'xterm_config' },
           { from: './src/assets/favicon.ico', to: 'favicon.ico' },
+          { from: './src/assets/manifest.json', to: 'manifest.json' },
+          { from: './src/assets/sw.js', to: '../sw.js' },
+          { from: './src/assets/wetty.svg', to: 'wetty.svg' },
         ],
         watch: watching,
       }),
@@ -78,7 +81,7 @@ async function buildClient(watching) {
     const buildCtx = await esbuild.context(esConf);
     await buildCtx.watch();
   } else {
-    esbuild.build(esConf);
+    await esbuild.build(esConf);
   }
 }
 
@@ -87,7 +90,7 @@ async function buildClient(watching) {
 async function buildServer(watching) {
   const tscArgs = ['tsc', '-p', 'tsconfig.node.json'];
   if (watching) tscArgs.push('--watch', '--preserveWatchOutput');
-  const [_tsc, tscDone] = cmd('pnpm', tscArgs);
+  const [_tsc, tscDone] = cmd('npx', tscArgs);
   if (!watching) await tscDone;
 }
 

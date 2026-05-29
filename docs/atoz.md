@@ -634,7 +634,7 @@ behind either:
   --force-ssh     Connecting through ssh even if running as root        [boolean]  [default: false]
   --known-hosts   path to known hosts file                              [string]
   --base, -b      base path to wetty                                    [string]   [default: "/wetty/"]
-  --port, -p      wetty listen port                                     [number]   [default: 3001]
+  --port, -p      wetty listen port                                     [number]   [default: 3000]
   --host          wetty listen host                                     [string]   [default: "0.0.0.0"]
   --command, -c   command to run in shell                               [string]   [default: "login"]
   --allow-iframe  Allow wetty to be embedded in an iframe, defaults to allowing

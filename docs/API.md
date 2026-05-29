@@ -29,7 +29,7 @@ Starts WeTTY Server
 | [ssh.config]              | `string`  |               | Specifies an alternative ssh configuration file. For further details see "-F" option in ssh(1)                         |
 | [serverConf]              | `Object`  |               | Server settings                                                                                                        |
 | [serverConf.base]         | `Object`  | `'/wetty/'`   | Server settings                                                                                                        |
-| [serverConf.port]         | `number`  | `3001`        | Port to run server on                                                                                                  |
+| [serverConf.port]         | `number`  | `3000`        | Port to run server on                                                                                                  |
 | [serverConf.host]         | `string`  | `'0.0.0.0'`   | Host address for server                                                                                                |
 | [serverConf.title]        | `string`  | `'WeTTY'`     | Title of the server                                                                                                    |
 | [serverConf.bypasshelmet] | `boolean` | `false`       | if helmet should be disabled on the sever                                                                              |

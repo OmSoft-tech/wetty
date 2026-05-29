@@ -16,7 +16,7 @@ export const sshDefault: SSH = {
 
 export const serverDefault: Server = {
   base: process.env.BASE ?? '/',
-  port: parseInt(process.env.PORT ?? '3001', 10),
+  port: parseInt(process.env.PORT ?? '3000', 10),
   host: '0.0.0.0',
   socket: false,
   title: process.env.TITLE ?? 'WeTTY - The Web Terminal Emulator',
