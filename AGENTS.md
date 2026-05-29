@@ -25,10 +25,10 @@ pnpm dev                  # Режим разработки с hot-reload
 
 ## Выполненные изменения
 
-### Port default 3000 → 3001
+### Port: 3000 (как в upstream)
 
-- `src/shared/defaults.ts` — `PORT || '3000'` → `PORT || '3001'`
-- Все доки (README.md, docs/), конфиги, Dockerfile, docker-compose.yml
+- Дефолтный порт — 3000, расхождений с upstream нет
+- В контейнере передаётся `--port 3000` для совместимости с nginx-proxy-manager
 
 ### node-pty upgrade 0.10 → 1.1.0
 
@@ -39,14 +39,44 @@ pnpm dev                  # Режим разработки с hot-reload
   современными Node
 - API обратно совместим: `IPtyForkOptions`, `pty.spawn()` — без изменений
 
-### gc-stats removed
+### GC-метрики: нативный PerformanceObserver
 
-- `package.json` — удалён из зависимостей
-- `src/server.ts` — удалён импорт и вызов `gc().on('stats', gcMetrics)`
-- `src/server/metrics.ts` — удалён (файл) — файл целиком
-- Причина: gc-stats застрял на 1.4.1, использует `nan`, несовместим с Node 25
-- Альтернатива не требуется — Prometheus GC-метрики не критичны,
-  `collectDefaultMetrics()` остаётся
+- upstream v3.0.0 переписал `src/server/metrics.ts` на `node:perf_hooks` вместо
+  пакета `gc-stats` — больше не требует нативного аддона
+- `observeGC()` вызывается из `src/server.ts`
+
+### PWA Support
+
+- `src/assets/manifest.json` — standalone режим, иконка, theme-color
+- `src/assets/sw.js` — service worker с network-first кешированием
+- `src/assets/wetty.svg` — SVG-иконка терминала
+- `src/server/socketServer/html.ts` — `<link rel="manifest">` и
+  `<meta name="theme-color">`
+- `src/client/wetty.ts` — регистрация service worker
+- `Cache-Control: no-cache` на `sw.js` и `manifest.json`
+
+### sshpass: безопасная передача пароля
+
+- `src/server/command/ssh.ts` — `sshpass -e` вместо `sshpass -p` (пароль через
+  `SSHPASS` env)
+- `src/server/command/ssh.spec.ts` — тесты
+
+### Build fixes
+
+- `build.js` — `await esbuild.build()` (гонка с tsc)
+- `build.js` — `npx tsc` вместо `pnpm tsc`
+- `.dockerignore` — `*.tsbuildinfo`
+
+### Docker
+
+- `containers/wetty/Dockerfile` — `node:22-alpine`, `ENTRYPOINT`, без gc-stats
+- Контейнер `wetty` в сети `npm_default`, порт 3000, base `/wetty`
+- Проксируется через nginx-proxy-manager на хосте
+
+### PR'ы в upstream
+
+- [#601](https://github.com/butlerx/wetty/pull/601) — PWA support
+- [#603](https://github.com/butlerx/wetty/pull/603) — build fixes
 
 ## Architecture
 
@@ -77,7 +107,6 @@ src/
 
 - **Текущий Node:** v25.9.0 (LTS для проекта — 22.x)
 - **Сборка:** esbuild (одна команда `pnpm build` собирает и сервер, и клиент)
-- **Зависимости:** в основном древние — проект в режиме поддержки
 - **Клиент:** xterm.js через WebSocket + Socket.IO
 - **Сервер:** Express + node-pty для эмуляции терминала
 
@@ -98,28 +127,3 @@ src/
 - Документация WeTTY: https://github.com/butlerx/wetty/tree/main/docs
 - node-pty 1.x: https://www.npmjs.com/package/node-pty
 - xterm.js: https://xtermjs.org/
-
-## Миграция запуска (Docker → native)
-
-Команда для запуска вместо Docker:
-
-```bash
-cd ~/develop/wetty
-node . --base / --port 3001 --host 172.27.0.1 --command /bin/zsh
-```
-
-- `--base /` — терминал по корневому URL (без /wetty)
-- `--command /bin/zsh` — прямой shell (без SSH), работает благодаря фиксу
-  non-root --command
-- `--host 172.27.0.1` — слушать на Docker-хосте (для nginx-proxy-manager)
-
-Порядок переключения:
-
-1. Обновить nginx-proxy-manager: proxy_pass → http://172.27.0.1:3001/ (без
-   /wetty)
-2. Убить процесс WeTTY
-3. Запустить снова
-4. Остановить Docker-контейнер
-
-Docker-контейнер пока работает — не трогать до переключения. systemd-сервис
-пользователь настроит сам.
